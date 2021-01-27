@@ -12,10 +12,6 @@ type
     Rectangle1: TRectangle;
     Image1: TImage;
     Label1: TLabel;
-  private
-    { Private declarations }
-  public
-    { Public declarations }
   end;
 
 implementation
