@@ -17,6 +17,7 @@ type
     Line1: TLine;
     lbxServicos: TListBox;
     procedure FormShow(Sender: TObject);
+    procedure lbxServicosItemClick(const Sender: TCustomListBox; const Item: TListBoxItem);
   private
     procedure CarregarServicos;
   end;
@@ -27,7 +28,7 @@ var
 implementation
 
 uses
-  UnitFrameServico;
+  UnitFrameServico, UnitAgenda;
 
 {$R *.fmx}
 
@@ -56,6 +57,12 @@ end;
 procedure TFrmDetalhePrestador.FormShow(Sender: TObject);
 begin
   CarregarServicos;
+end;
+
+procedure TFrmDetalhePrestador.lbxServicosItemClick(const Sender: TCustomListBox;
+  const Item: TListBoxItem);
+begin
+  FrmAgenda.Show;
 end;
 
 end.

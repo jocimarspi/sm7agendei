@@ -5,7 +5,7 @@ object FrmDetalhePrestador: TFrmDetalhePrestador
   ClientHeight = 480
   ClientWidth = 320
   Fill.Kind = Solid
-  Position = Designed
+  Position = MainFormCenter
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -14892,6 +14892,7 @@ object FrmDetalhePrestador: TFrmDetalhePrestador
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
+    OnItemClick = lbxServicosItemClick
     Viewport.Width = 320.000000000000000000
     Viewport.Height = 184.000000000000000000
   end
