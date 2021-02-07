@@ -1,0 +1,304 @@
+object FrmAgenda: TFrmAgenda
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 517
+  ClientWidth = 320
+  Fill.Kind = Solid
+  Position = MainFormCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object Layout3: TLayout
+    Align = Top
+    Size.Width = 320.000000000000000000
+    Size.Height = 56.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object Label1: TLabel
+      Align = Contents
+      AutoSize = True
+      StyledSettings = [Family]
+      Size.Width = 320.000000000000000000
+      Size.Height = 56.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00060000000000000004000000}
+      TextSettings.FontColor = xFF5CC6BA
+      TextSettings.HorzAlign = Center
+      Text = 'Fazer agendamento'
+      TabOrder = 0
+    end
+    object Image1: TImage
+      MultiResBitmap.Height = 64
+      MultiResBitmap.Width = 64
+      MultiResBitmap = <
+        item
+          Width = 64
+          Height = 64
+          PNG = {
+            89504E470D0A1A0A0000000D4948445200000040000000400806000000AA6971
+            DE000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+            03FA49444154785EED995F685B551CC77FBF93DCA429CA1C63BEEC491114062A
+            38265D33BA3A7ADB22CC0715B636F54154F630C6607B1CCC179FF62482CC2771
+            4D3AB7814C18BA26C53F4D93BE9422287B197B104191EAFE74AE69D2DCF3DBEF
+            A43FB785A65D9246C9C9CEE7E5FE7EDF7B6E6EEEF7DE9C7C4F020E87C3E17038
+            1C0E87C3F13882B26D396FFF7221125DDC729C087702D1D9547C302DBBDA8AFF
+            C480B7F2F95844DFF94A291C327DA108BABB0BFBC67B06662A03DA0825DB96F1
+            EECCA527A37AF1DB7F2FDE108B82A28012D2B6152D3560247B796B89BAA750A9
+            3E911E80F094546D45CB0C48E4269F46F47E8010EC16C90A5A62C03BF9A91D80
+            388D0A5F14C91A366DC04836F36C897496CBE75715BBD894018772575E201D4C
+            87119E11C93A9A362091BDF29242351DF2D40E91ACA4290312B393AF42487DCF
+            2162BB48D6D2B001A3B3997D402B535C6E5D55ECA62103466627877129F80620
+            F28448D653B7018999CC9B6A192F414CC544EA08EA5A0B8CE5D26384F03997A1
+            55A571086816419DE16D841747113EB5C727F700C92302FE2281300F0BF179C2
+            48A8C8F4C83D9142C343EF95F71112692E02BE85012FB84ABC7799E50212DCE6
+            D758200ACF4FF4EEFF550E5997471A30964F1FA642E15388C51E39B6DD20AD7F
+            24C06313F1C19F445AC3861795C8A54FF088D3D25A49010ACB318C1E48F60C65
+            44AA625D034673931FF283774A5AAB5929AFFCDD15743FF7457FFF2D91EE5373
+            124CE4D3473AE5E20D5ED8DB568E9446A4ADA2A60101C07B52760C7C435F91B2
+            8A9A06F054CF13EDE3414D037862F84CCACE01614EAA2A6A1A30BEC73FC3DFA5
+            27A5B51E7E9C178A1E4E485B454D030CA91EFF230E28C7A4B596A0084B1C9A0E
+            5EDC35705BA42AD635C090EAF53F66F7DE37BFEA8A64159A20E38583DDC9DEC1
+            EF445A435DE96E34973E8458380B103371B529D8C1BC22FA043902738E8D98AD
+            AEC4616D5ED3E3C466B695486CA2314764737342DC23075F4EB83C9173E63525
+            6B3C9C433261C0C797015589EB22D74B3CEC8E06BDA049CD7F19F77F37E7DE88
+            BA0C308CCD64DED08ACEF30151911A83E07CB2D73F285DDBB0E147E061C6E303
+            5FF33375C07CA644EA08EA36C060FEDE525E3004455814C97A1A32C0908A0F67
+            D183FD6CC20D91ACA661030CE3717F4E47611F94CB7F8A642D4D196098D8E3FF
+            1C78E1BD3CB9FD269295346D80E15C8F7F4D43682F015D17C93A366580A1F2B3
+            D38AE62781AE8A64159B36C090EA1BFE238846FA38EDCC8B640D2D31C0706E57
+            FF5FC52E7CCD243E91ACA0650618CC82437593CF26ACC9DE3C4FDC94B2AD68A9
+            0186E4CB8377BDA2F73A979757950A8122C56B89F6A3EEB540A37C3037E7FD53
+            BC7194172D3B154172A31599C3E170381C0E87C3E17038FE5700EE01A82738AE
+            1BA256B80000000049454E44AE426082}
+          FileName = 'D:\OneDrive\Semana Mobile 99 Coder\sm7agendei\Imagens\back.png'
+        end>
+      Align = Left
+      Margins.Left = 5.000000000000000000
+      Position.X = 5.000000000000000000
+      Size.Width = 50.000000000000000000
+      Size.Height = 51.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Line3: TLine
+      Align = Bottom
+      LineType = Top
+      Position.Y = 51.000000000000000000
+      Size.Width = 320.000000000000000000
+      Size.Height = 5.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = xFFF2F2F2
+    end
+  end
+  object layCalendario: TLayout
+    Align = Top
+    Position.Y = 89.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 257.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+  end
+  object lblPrestador: TLabel
+    Align = Top
+    StyledSettings = [Family]
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 351.000000000000000000
+    Size.Width = 310.000000000000000000
+    Size.Height = 18.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Size = 16.000000000000000000
+    TextSettings.FontColor = xFF717F7F
+    Text = 'Selecione um hor'#225'rio'
+    TabOrder = 2
+  end
+  object Line1: TLine
+    Align = Top
+    LineType = Top
+    Position.Y = 346.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 5.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = xFFF2F2F2
+  end
+  object lbxHorarios: TListBox
+    Align = Top
+    Position.Y = 369.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'transparentlistboxstyle'
+    TabOrder = 7
+    ShowScrollBars = False
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    ListStyle = Horizontal
+    Viewport.Width = 320.000000000000000000
+    Viewport.Height = 41.000000000000000000
+  end
+  object Line2: TLine
+    Align = Top
+    LineType = Top
+    Position.Y = 410.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 5.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = xFFF2F2F2
+  end
+  object Label2: TLabel
+    Align = Top
+    StyledSettings = [Family]
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 415.000000000000000000
+    Size.Width = 310.000000000000000000
+    Size.Height = 18.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Size = 16.000000000000000000
+    TextSettings.FontColor = xFF717F7F
+    Text = 'Consulta Dr. Alberto Souza'
+    TabOrder = 1
+  end
+  object lblValor: TLabel
+    Align = Top
+    StyledSettings = [Family]
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 433.000000000000000000
+    Size.Width = 310.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Size = 14.000000000000000000
+    TextSettings.FontColor = xFF5CC6BA
+    Text = 'R$ 300,00'
+    TabOrder = 0
+  end
+  object Line4: TLine
+    Align = Top
+    LineType = Top
+    Position.Y = 460.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 5.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = xFFF2F2F2
+  end
+  object rectAgendar: TRectangle
+    Align = Bottom
+    Fill.Color = xFF5CC6BA
+    Margins.Left = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Margins.Bottom = 10.000000000000000000
+    Position.X = 10.000000000000000000
+    Position.Y = 469.000000000000000000
+    Size.Width = 300.000000000000000000
+    Size.Height = 38.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Kind = None
+    XRadius = 19.000000000000000000
+    YRadius = 19.000000000000000000
+    OnClick = rectAgendarClick
+    object Label6: TLabel
+      Align = Center
+      AutoSize = True
+      StyledSettings = [Family]
+      Locked = True
+      Size.Width = 234.000000000000000000
+      Size.Height = 16.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.StyleExt = {00060000000000000004000000}
+      TextSettings.FontColor = claWhite
+      TextSettings.HorzAlign = Center
+      Text = 'Confirmar agendamento'
+      TabOrder = 0
+    end
+  end
+  object Layout1: TLayout
+    Align = Top
+    Position.Y = 56.000000000000000000
+    Size.Width = 320.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    object lblMes: TLabel
+      Align = Client
+      AutoSize = True
+      StyledSettings = [Family]
+      Size.Width = 244.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 16.000000000000000000
+      TextSettings.Font.StyleExt = {00060000000000000004000000}
+      TextSettings.FontColor = xFF323434
+      TextSettings.HorzAlign = Center
+      Text = 'Janeiro'
+      TabOrder = 0
+    end
+    object imgAnterior: TImage
+      MultiResBitmap.Height = 48
+      MultiResBitmap.Width = 48
+      MultiResBitmap = <
+        item
+          Width = 48
+          Height = 48
+          PNG = {
+            89504E470D0A1A0A0000000D49484452000000300000003008060000005702F9
+            87000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+            009C494441546843EDD5410AC2301484E168C13BA95D783017EAC95CF4189E42
+            0FA0F3DA085D1804A14D47FE0F869774358F2C9A000000309B93721E8E7EA2FC
+            33E7121F9C8CCBBF73542C7C2A7F57B6CAE251BE16CAD742F95A28FFAB759E53
+            58E569A1F40A3BC5466989BD62E36F9778282C31B7D212AD628325BE69F29CD2
+            55899FDAA1BF0D36CA4DE9FA9B89F14BC4D95214B72D0F0000B02C29BD002E3E
+            6FD39079947E0000000049454E44AE426082}
+          FileName = 
+            'D:\OneDrive\Semana Mobile 99 Coder\sm7agendei\Imagens\icon-prior' +
+            '.png'
+        end>
+      Align = Left
+      Opacity = 0.600000023841857900
+      Margins.Left = 5.000000000000000000
+      Position.X = 5.000000000000000000
+      Size.Width = 33.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      OnClick = imgAnteriorClick
+    end
+    object imgProximo: TImage
+      MultiResBitmap.Height = 48
+      MultiResBitmap.Width = 48
+      MultiResBitmap = <
+        item
+          Width = 48
+          Height = 48
+          PNG = {
+            89504E470D0A1A0A0000000D49484452000000300000003008060000005702F9
+            87000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+            007A494441546843EDD2DD0980301843D1EA56FE2C26F8A08EAC03688AED06D6
+            36700F84AF8F0934000000E033BBB2BD4F3F8772A7D88D58955CDE72C4A09C0A
+            236A63442B18D10A46B4A2D8883EDDD2BA742D8D8AED179A14CAD710CB5F0AE5
+            FF362B94AFC1BA7CB428B6E5B358D8B67C168BDB96070000F012C20313B1721E
+            CF03089D0000000049454E44AE426082}
+          FileName = 
+            'D:\OneDrive\Semana Mobile 99 Coder\sm7agendei\Imagens\icon-next.' +
+            'png'
+        end>
+      Align = Right
+      Opacity = 0.600000023841857900
+      Margins.Right = 5.000000000000000000
+      Position.X = 282.000000000000000000
+      Size.Width = 33.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      OnClick = imgProximoClick
+    end
+  end
+end

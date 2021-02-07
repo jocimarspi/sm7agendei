@@ -1,0 +1,547 @@
+﻿unit UnitDm;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, uDWDataModule, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool,
+  FireDAC.Stan.Async, FireDAC.Phys, FireDAC.FMXUI.Wait, Data.DB, FireDAC.Comp.Client,
+  FireDAC.VCLUI.Wait, FireDAC.Phys.FBDef, FireDAC.Phys.IBBase, FireDAC.Phys.FB, uDWAbout,
+  uRESTDWServerEvents, uDWJSONObject, uDWConsts, FireDAC.Stan.Param, FireDAC.DatS,
+  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet, System.JSON;
+
+type
+  TDm = class(TServerMethodDataModule)
+    Connection: TFDConnection;
+    FDPhysFBDriverLink1: TFDPhysFBDriverLink;
+    EventsUsuario: TDWServerEvents;
+    EventsCategoria: TDWServerEvents;
+    EventsEmpresa: TDWServerEvents;
+    EventsServico: TDWServerEvents;
+    EventsReserva: TDWServerEvents;
+    procedure DataModuleCreate(Sender: TObject);
+    procedure EventsUsuarioEventsloginReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsCategoriaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsUsuarioEventscadastroReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsEmpresaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsServicoEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsServicoEventshorarioReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsServicoEventsreservarReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+    procedure EventsReservaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+      const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+  end;
+
+var
+  Dm: TDm;
+
+implementation
+
+uses
+  uDWJSON;
+
+{%CLASSGROUP 'FMX.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TDm.DataModuleCreate(Sender: TObject);
+begin
+  Connection.Params.Values['DriverID'] := 'FB';
+  Connection.Params.Values['Database'] := 'D:\OneDrive\Semana Mobile 99 Coder\sm7agendei\servidor\bd\BANCO.FDB';
+  Connection.Params.Values['User_name'] := 'SYSDBA';
+  Connection.Params.Values['Password'] := 'masterkey';
+  Connection.Connected := true;
+end;
+
+procedure TDm.EventsCategoriaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+const
+  SQL_CATEGORIA =
+    ' SELECT DISTINCT '+
+    '        c.ID_CATEGORIA,' +
+    '        c.DESCRICAO,  ' +
+    '        c.ICONE '+
+    '   FROM TAB_CATEGORIA c ' +
+    '   JOIN TAB_EMPRESA e ' +
+    '     ON c.ID_CATEGORIA = e.ID_CATEGORIA ' +
+    '  WHERE e.CIDADE = :CIDADE ';
+
+var
+  qry: TFDQuery;
+  json: uDWJSONObject.TJSONValue;
+begin
+  qry := TFDQuery.Create(nil);
+  json := uDWJSONObject.TJSONValue.Create;
+  try
+    qry.Connection := Connection;
+
+    qry.Close;
+    qry.SQL.Text := SQL_CATEGORIA;
+    qry.ParamByName('CIDADE').Value := Params.ItemsString['cidade'].AsString;
+    qry.Open;
+
+    json.LoadFromDataset(EmptyStr, qry, false, jmPureJSON, 'dd/mm/yyyy hh:nn:ss');
+
+    result := json.ToJSON;
+  finally
+    json.DisposeOf;
+    qry.DisposeOf;
+  end;
+end;
+
+procedure TDm.EventsEmpresaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    qry : TFDQuery;
+    json : uDWJsonObject.TJSONValue;
+begin
+    try
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        json := uDWJsonObject.TJSONValue.Create;
+
+        qry.Active := false;
+        qry.SQL.Clear;
+        qry.sql.Add('SELECT E.ID_EMPRESA, E.NOME, ENDERECO, BAIRRO,');
+        qry.sql.Add('CIDADE, ESTADO, FONE, ID_CATEGORIA');
+
+        // algumas consultas nao precisam de foto...
+        if Params.ItemsString['ind_foto'].AsString = 'S' then
+            qry.sql.Add(', FOTO')
+        else
+            qry.sql.Add(', NULL AS FOTO');
+
+        qry.sql.Add('FROM TAB_EMPRESA E');
+        qry.sql.Add('WHERE E.CIDADE = :CIDADE');
+        qry.ParamByName('CIDADE').Value := Params.ItemsString['cidade'].AsString;
+
+        if Params.ItemsString['busca'].AsString <> '' then
+        begin
+            qry.sql.Add('AND E.NOME LIKE :NOME');
+            qry.ParamByName('NOME').Value := '%' + Params.ItemsString['busca'].AsString + '%';
+        end;
+
+        if Params.ItemsString['id_empresa'].AsString <> '' then
+        begin
+            qry.sql.Add('AND E.ID_EMPRESA = :ID_EMPRESA');
+            qry.ParamByName('ID_EMPRESA').Value := Params.ItemsString['id_empresa'].AsString;
+        end;
+
+        qry.Active := true;
+
+        json.LoadFromDataset('', qry, false, jmPureJSON, 'dd/mm/yyyy hh:nn:ss');
+
+        Result := json.ToJSON;
+    finally
+        json.DisposeOf;
+        qry.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsReservaEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    qry : TFDQuery;
+    json : uDWJsonObject.TJSONValue;
+begin
+    try
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        json := uDWJsonObject.TJSONValue.Create;
+
+        qry.Active := false;
+        qry.SQL.Clear;
+        qry.sql.Add('SELECT R.*, S.DESCRICAO, E.NOME, S.VALOR, E.ENDERECO, E.BAIRRO, E.CIDADE, E.FONE');
+        qry.sql.Add('FROM TAB_RESERVA R');
+        qry.sql.Add('JOIN TAB_SERVICO S ON (S.ID_SERVICO = R.ID_SERVICO)');
+        qry.sql.Add('JOIN TAB_EMPRESA E ON (E.ID_EMPRESA = S.ID_EMPRESA)');
+        qry.sql.Add('WHERE R.ID_USUARIO = :ID_USUARIO');
+
+        try
+            qry.ParamByName('ID_USUARIO').Value := Params.ItemsString['id_usuario'].AsInteger;
+        except
+            qry.ParamByName('ID_USUARIO').Value := 0;
+        end;
+
+        qry.sql.Add('ORDER BY R.DATA_RESERVA, R.HORA');
+        qry.Active := true;
+
+        json.LoadFromDataset('', qry, false, jmPureJSON, 'dd/mm/yyyy hh:nn:ss');
+
+        Result := json.ToJSON;
+    finally
+        json.DisposeOf;
+        qry.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsServicoEventshorarioReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    qry : TFDQuery;
+    json : uDWJsonObject.TJSONValue;
+    dt : TDate;
+    dia, mes, ano : Integer;
+begin
+
+    // converte parametro "dt" para o formato TDate
+    if Params.ItemsString['dt'].AsString <> '' then
+    begin
+        ano := Copy(Params.ItemsString['dt'].AsString, 1, 4).ToInteger;
+        mes := Copy(Params.ItemsString['dt'].AsString, 6, 2).ToInteger;
+        dia := Copy(Params.ItemsString['dt'].AsString, 9, 2).ToInteger;
+        dt := EncodeDate(ano, mes, dia);
+    end
+    else
+        dt := date;
+
+    try
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        json := uDWJsonObject.TJSONValue.Create;
+
+        qry.Active := false;
+        qry.SQL.Clear;
+        qry.sql.Add('SELECT H.*');
+        qry.sql.Add('FROM TAB_SERVICO S');
+        qry.sql.Add('JOIN TAB_SERVICO_HORARIO H ON (H.ID_SERVICO = S.ID_SERVICO)');
+        qry.sql.Add('WHERE S.ID_SERVICO = :ID_SERVICO');
+        qry.sql.Add('AND H.DIA_SEMANA = :DIA_SEMANA');
+
+        // se for hoje, nao listar as horas passadas...
+        if dt = date then
+            qry.sql.Add('AND H.HORA > ''' + FormatDateTime('HH:nn', now) + '''');
+
+
+        qry.sql.Add('AND NOT EXISTS( SELECT  0');
+        qry.sql.Add('        FROM    TAB_RESERVA R');
+        qry.sql.Add('        WHERE   R.ID_SERVICO = S.ID_SERVICO');
+        qry.sql.Add('        AND     R.HORA = H.HORA');
+        qry.sql.Add('        AND     H.DIA_SEMANA = R.DIA_SEMANA');
+        qry.sql.Add('        AND     R.DATA_RESERVA = :DATA_RESERVA)');
+
+        try
+            qry.ParamByName('ID_SERVICO').Value := Params.ItemsString['id_servico'].AsInteger;
+        except
+            qry.ParamByName('ID_SERVICO').Value := 0;
+        end;
+
+        qry.ParamByName('DIA_SEMANA').Value := DayOfWeek(dt);
+        qry.ParamByName('DATA_RESERVA').AsDate := dt;
+
+        qry.sql.Add('ORDER BY H.HORA');
+        qry.Active := true;
+
+        json.LoadFromDataset('', qry, false, jmPureJSON, 'dd/mm/yyyy hh:nn:ss');
+
+        Result := json.ToJSON;
+    finally
+        json.DisposeOf;
+        qry.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsServicoEventslistarReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    qry : TFDQuery;
+    json : uDWJsonObject.TJSONValue;
+begin
+    try
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        json := uDWJsonObject.TJSONValue.Create;
+
+        qry.Active := false;
+        qry.SQL.Clear;
+        qry.sql.Add('SELECT S.*');
+        qry.sql.Add('FROM TAB_SERVICO S');
+        qry.sql.Add('WHERE S.ID_EMPRESA = :ID_EMPRESA');
+
+        try
+            qry.ParamByName('ID_EMPRESA').Value := Params.ItemsString['id_empresa'].AsInteger;
+        except
+            qry.ParamByName('ID_EMPRESA').Value := 0;
+        end;
+
+        qry.Active := true;
+
+        json.LoadFromDataset('', qry, false, jmPureJSON, 'dd/mm/yyyy hh:nn:ss');
+
+        Result := json.ToJSON;
+    finally
+        json.DisposeOf;
+        qry.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsServicoEventsreservarReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    json : System.JSON.TJSONObject;
+    qry : TFDQuery;
+    dt : TDate;
+    dia, mes, ano : integer;
+begin
+    try
+        json := System.JSON.TJSONObject.Create;
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        // Valida parametros...
+        if (Params.ItemsString['id_usuario'].AsString = '') or
+           (Params.ItemsString['id_servico'].AsString = '') or
+           (Params.ItemsString['dt'].AsString = '') or
+           (Params.ItemsString['hora'].AsString = '') then
+        begin
+            json.AddPair('retorno', 'Informa todos os parametros');
+            Result := json.ToString;
+            exit;
+        end;
+
+        try
+            Params.ItemsString['id_usuario'].AsInteger;
+            Params.ItemsString['id_servico'].AsInteger;
+        except
+            json.AddPair('retorno', 'Parametros inv�lidos');
+            Result := json.ToString;
+            exit;
+        end;
+
+
+        // converte parametro "dt" para o formato TDate
+        try
+            ano := Copy(Params.ItemsString['dt'].AsString, 1, 4).ToInteger;
+            mes := Copy(Params.ItemsString['dt'].AsString, 6, 2).ToInteger;
+            dia := Copy(Params.ItemsString['dt'].AsString, 9, 2).ToInteger;
+            dt := EncodeDate(ano, mes, dia);
+        except
+            dt := date;
+        end;
+
+        try
+            with dm do
+            begin
+                // Validar se vaga ainda est� disponivel...
+                qry.Active := false;
+                qry.SQL.Clear;
+                qry.sql.Add('SELECT * FROM TAB_RESERVA');
+                qry.sql.Add('WHERE ID_SERVICO=:ID_SERVICO AND DATA_RESERVA=:DATA_RESERVA');
+                qry.sql.Add('AND HORA=:HORA');
+
+                try
+                    qry.ParamByName('ID_SERVICO').Value := Params.ItemsString['id_servico'].AsInteger;
+                except
+                    qry.ParamByName('ID_SERVICO').Value := 0;
+                end;
+
+                qry.ParamByName('DATA_RESERVA').AsDate := dt;
+                qry.ParamByName('HORA').value := Params.ItemsString['hora'].AsString;
+                qry.Active := true;
+
+                if qry.RecordCount > 0 then
+                begin
+                    json.AddPair('retorno', 'Esse hor�rio n�o est� mais dispon�vel');
+                    Result := json.ToString;
+                    exit;
+                end;
+
+
+
+                qry.Active := false;
+                qry.SQL.Clear;
+                qry.sql.Add('INSERT INTO TAB_RESERVA(ID_USUARIO, ID_SERVICO, DATA_RESERVA, HORA, DIA_SEMANA)');
+                qry.sql.Add('VALUES(:ID_USUARIO, :ID_SERVICO, :DATA_RESERVA, :HORA, :DIA_SEMANA)');
+                qry.ParamByName('ID_USUARIO').Value := Params.ItemsString['id_usuario'].AsInteger;
+                qry.ParamByName('ID_SERVICO').Value := Params.ItemsString['id_servico'].AsInteger;
+                qry.ParamByName('DATA_RESERVA').AsDate := dt;
+                qry.ParamByName('HORA').Value := Params.ItemsString['hora'].AsString;
+                qry.ParamByName('DIA_SEMANA').Value := DayOfWeek(dt);
+                qry.ExecSQL;
+
+
+                // Busca o id_usuario cadastrado...
+                qry.Active := false;
+                qry.SQL.Clear;
+                qry.sql.Add('SELECT MAX(ID_RESERVA) AS ID_RESERVA FROM TAB_RESERVA');
+                qry.sql.Add('WHERE ID_USUARIO=:ID_USUARIO AND ID_SERVICO=:ID_SERVICO');
+                qry.sql.Add('AND DATA_RESERVA=:DATA_RESERVA AND HORA=:HORA');
+                qry.ParamByName('ID_USUARIO').Value := Params.ItemsString['id_usuario'].AsInteger;
+                qry.ParamByName('ID_SERVICO').Value := Params.ItemsString['id_servico'].AsInteger;
+                qry.ParamByName('DATA_RESERVA').AsDate := dt;
+                qry.ParamByName('HORA').Value := Params.ItemsString['hora'].AsString;
+                qry.Active := true;
+
+
+                json.AddPair('retorno', 'OK');
+                json.AddPair('id_reserva', qry.FieldByName('ID_RESERVA').AsString);
+
+                Result := json.ToString;
+            end;
+        except on ex:exception do
+            begin
+                json.AddPair('retorno', ex.Message);
+                Result := json.ToString;
+            end;
+        end;
+
+    finally
+        qry.DisposeOf;
+        json.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsUsuarioEventscadastroReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+var
+    json : System.JSON.TJSONObject;
+    qry : TFDQuery;
+begin
+    try
+        json := System.JSON.TJSONObject.Create;
+        qry := TFDQuery.Create(nil);
+        qry.Connection := Connection;
+
+        // Valida parametros vazios...
+        if (Params.ItemsString['email'].AsString = '') or
+           (Params.ItemsString['nome'].AsString = '') or
+           (Params.ItemsString['senha'].AsString = '') then
+        begin
+            json.AddPair('retorno', 'Informa todos os parâmetros');
+            Result := json.ToString;
+            exit;
+        end;
+
+        // Valida email ja cadastrado (quando tiver cadastrando um novo usuario)...
+        if Params.ItemsString['id_usuario'].AsString = '' then
+        begin
+            qry.Active := false;
+            qry.SQL.Clear;
+            qry.sql.Add('SELECT * FROM TAB_USUARIO');
+            qry.sql.Add('WHERE EMAIL=:EMAIL');
+            qry.ParamByName('EMAIL').Value := Params.ItemsString['email'].AsString;
+            qry.Active := true;
+
+            if qry.RecordCount > 0 then
+            begin
+                json.AddPair('retorno', 'Esse email já está em uso por outra conta');
+                Result := json.ToString;
+                exit;
+            end;
+        end;
+
+        try
+            with dm do
+            begin
+                qry.Active := false;
+                qry.SQL.Clear;
+
+                // Se passou id_usuario, vamos atualizar...
+                if Params.ItemsString['id_usuario'].AsString <> '' then
+                begin
+                    qry.sql.Add('UPDATE TAB_USUARIO SET EMAIL=:EMAIL, SENHA=:SENHA, NOME=:NOME');
+                    qry.sql.Add('WHERE ID_USUARIO = :ID_USUARIO');
+
+                    qry.ParamByName('ID_USUARIO').Value := Params.ItemsString['id_usuario'].AsString;
+                end
+                else
+                begin
+                    qry.sql.Add('INSERT INTO TAB_USUARIO(NOME, EMAIL, SENHA)');
+                    qry.sql.Add('VALUES(:NOME, :EMAIL, :SENHA)');
+                end;
+
+                qry.ParamByName('NOME').Value := Params.ItemsString['nome'].AsString;
+                qry.ParamByName('EMAIL').Value := Params.ItemsString['email'].AsString;
+                qry.ParamByName('SENHA').Value := Params.ItemsString['senha'].AsString;
+                qry.ExecSQL;
+
+
+                // Busca o id_usuario cadastrado...
+                qry.Active := false;
+                qry.SQL.Clear;
+                qry.sql.Add('SELECT MAX(ID_USUARIO) AS ID_USUARIO FROM TAB_USUARIO');
+                qry.sql.Add('WHERE EMAIL=:EMAIL');
+                qry.ParamByName('EMAIL').Value := Params.ItemsString['email'].AsString;
+                qry.Active := true;
+
+
+                json.AddPair('retorno', 'OK');
+                json.AddPair('id_usuario', qry.FieldByName('id_usuario').AsString);
+
+                Result := json.ToString;
+            end;
+        except on ex:exception do
+            begin
+                json.AddPair('retorno', ex.Message);
+                Result := json.ToString;
+            end;
+        end;
+
+    finally
+        qry.DisposeOf;
+        json.DisposeOf;
+    end;
+end;
+
+procedure TDm.EventsUsuarioEventsloginReplyEventByType(var Params: TDWParams; var Result: string;
+  const RequestType: TRequestType; var StatusCode: Integer; RequestHeader: TStringList);
+const
+  SQL_LOGIN =
+    ' SELECT * FROM TAB_USUARIO ' +
+    ' WHERE EMAIL = :EMAIL ' +
+    '   AND SENHA = :SENHA ';
+var
+  json: uDWJson.TJSONObject;
+  qry: TFDQuery;
+begin
+  json := TJSONObject.create;
+  qry := TFDQuery.Create(nil);
+  try
+    if Params.ItemsString['email'].AsString = EmptyStr then
+    begin
+      json.put('retorno', 'Email não informado');
+      Result := json.toString;
+      exit;
+    end;
+
+    try
+      qry.Connection := Connection;
+      qry.Close;
+      qry.SQL.Text := SQL_LOGIN;
+      qry.ParamByName('email').Value := Params.ItemsString['email'].AsString;
+      qry.ParamByName('senha').Value := Params.ItemsString['senha'].AsString;
+      qry.Open;
+
+      if qry.IsEmpty then
+        json.put('retorno', 'Email ou senha inválidos')
+      else
+      begin
+        json.put('retorno','OK');
+        json.put('id_usuario',qry.FieldByName('id_usuario').AsString);
+        json.put('nome',qry.FieldByName('nome').AsString);
+      end;
+    except
+      on E: Exception do
+      begin
+        json.put('retorno', e.ToString);
+      end;
+    end;
+
+    result := json.toString;
+  finally
+    qry.DisposeOf;
+    json.DisposeOf;
+  end;
+end;
+
+end.
